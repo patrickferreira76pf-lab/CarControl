@@ -45,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .from('users')
       .select('id, email, name, role')
       .eq('email', email)
+      .eq('password', password) // This line was missing
       .eq('active', true)
       .maybeSingle();
 

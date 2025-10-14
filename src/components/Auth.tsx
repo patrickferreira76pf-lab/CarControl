@@ -25,8 +25,9 @@ export function Auth() {
         setMode('signin');
         setFormData({ email: '', password: '', name: '' });
       }
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro inesperado.';
+      alert(message);
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Car, Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Car, Plus, Search } from 'lucide-react';
 
 interface Vehicle {
   id: string;
@@ -32,14 +32,11 @@ export function Vehicles() {
     color: '',
   });
 
-  useEffect(() => {
-    loadVehicles();
-  }, [user]);
-
-  async function loadVehicles() {
+  const loadVehicles = useCallback(async () => {
     if (!user) return;
 
     try {
+      setLoading(true);
       let query = supabase
         .from('vehicles')
         .select('id, plate, brand, model, year, current_mileage, fuel_type, color')
@@ -59,7 +56,11 @@ export function Vehicles() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user, isManager]);
+
+  useEffect(() => {
+    loadVehicles();
+  }, [loadVehicles]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -89,8 +90,9 @@ export function Vehicles() {
         color: '',
       });
       loadVehicles();
-    } catch (error: any) {
-      alert(error.message || 'Erro ao cadastrar veículo');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao cadastrar veículo';
+      alert(message);
     }
   }
 
