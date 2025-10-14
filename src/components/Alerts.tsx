@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AlertTriangle, CheckCircle, Info, Bell } from 'lucide-react';
@@ -25,14 +25,11 @@ export function Alerts() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'VIEWED' | 'RESOLVED'>('ALL');
 
-  useEffect(() => {
-    loadAlerts();
-  }, [user]);
-
-  async function loadAlerts() {
+  const loadAlerts = useCallback(async () => {
     if (!user) return;
 
     try {
+      setLoading(true);
       let query = supabase
         .from('alerts')
         .select(`
@@ -79,7 +76,11 @@ export function Alerts() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user, isManager]);
+
+  useEffect(() => {
+    loadAlerts();
+  }, [loadAlerts]);
 
   async function markAsViewed(alertId: string) {
     try {

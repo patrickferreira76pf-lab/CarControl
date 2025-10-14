@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, ElementType } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Car, DollarSign, AlertTriangle, TrendingUp } from 'lucide-react';
@@ -20,11 +20,7 @@ export function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [user]);
-
-  async function loadDashboardData() {
+  const loadDashboardData = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -102,7 +98,11 @@ export function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user, isManager]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   const StatCard = ({
     icon: Icon,
@@ -110,7 +110,7 @@ export function Dashboard() {
     value,
     color
   }: {
-    icon: any;
+    icon: ElementType;
     label: string;
     value: string | number;
     color: string;

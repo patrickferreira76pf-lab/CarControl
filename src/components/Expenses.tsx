@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Receipt, Filter } from 'lucide-react';
@@ -52,11 +52,7 @@ export function Expenses() {
     vehicle_id: '',
   });
 
-  useEffect(() => {
-    loadData();
-  }, [user]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -104,13 +100,18 @@ export function Expenses() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user, isManager]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const expenseData: any = {
         date: formData.date,
         category: formData.category,
@@ -152,8 +153,9 @@ export function Expenses() {
         vehicle_id: '',
       });
       loadData();
-    } catch (error: any) {
-      alert(error.message || 'Erro ao registrar despesa');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao registrar despesa';
+      alert(message);
     }
   }
 
