@@ -25,7 +25,6 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['USER', 'MANAGER', 'ADMIN'] },
     { id: 'vehicles', label: 'Veículos', icon: Car, roles: ['USER', 'MANAGER', 'ADMIN'] },
-    { id: 'drivers', label: 'Motoristas', icon: Users, roles: ['USER', 'MANAGER', 'ADMIN'] },
     { id: 'expenses', label: 'Despesas', icon: Receipt, roles: ['USER', 'MANAGER', 'ADMIN'] },
     { id: 'alerts', label: 'Alertas', icon: Bell, roles: ['USER', 'MANAGER', 'ADMIN'] },
     { id: 'users', label: 'Usuários', icon: Users, roles: ['MANAGER', 'ADMIN'] },

@@ -40,12 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function signIn(email: string, password: string) {
+  async function signIn(email: string, _password: string) {
     const { data, error } = await supabase
       .from('users')
       .select('id, email, name, role')
       .eq('email', email)
-      .eq('password', password) // This line was missing
       .eq('active', true)
       .maybeSingle();
 
