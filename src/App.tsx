@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Component, ReactNode } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Auth } from './components/Auth';
 import { Layout } from './components/Layout';
@@ -6,6 +6,40 @@ import { Dashboard } from './components/Dashboard';
 import { Vehicles } from './components/Vehicles';
 import { Expenses } from './components/Expenses';
 import { Alerts } from './components/Alerts';
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message?: string }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error: unknown) {
+    const message = error instanceof Error ? error.message : 'Erro inesperado';
+    return { hasError: true, message };
+  }
+  componentDidCatch(error: unknown) {
+    // Mantém log útil no console sem quebrar a UI
+    console.error('[ErrorBoundary]', error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 max-w-lg text-center">
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Ocorreu um erro</h1>
+            <p className="text-slate-600 mb-4">{this.state.message}</p>
+            <button
+              className="px-4 py-2 bg-slate-900 text-white rounded-lg"
+              onClick={() => window.location.reload()}
+            >
+              Recarregar
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -48,7 +82,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
     </AuthProvider>
   );
 }
