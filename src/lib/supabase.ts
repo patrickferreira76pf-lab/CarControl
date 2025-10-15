@@ -1,13 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim();
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+const envMissing = !supabaseUrl || !supabaseAnonKey;
+
+if (envMissing) {
+  // Em vez de quebrar a aplicação (tela branca), registramos um erro claro.
+  // Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY em um arquivo .env.
+  // O app continuará carregando a UI (ex.: tela de login), e as chamadas à API
+  // falharão com erro de rede até que as variáveis sejam configuradas.
+  console.error(
+    '[Supabase] Variáveis de ambiente ausentes: defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY em um arquivo .env'
+  );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  supabaseUrl || 'https://invalid.localhost',
+  supabaseAnonKey || 'invalid-key'
+);
 
 export type Database = {
   public: {

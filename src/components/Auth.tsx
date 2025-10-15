@@ -11,6 +11,7 @@ export function Auth() {
     password: '',
     name: '',
   });
+  const envMissing = !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,6 +50,13 @@ export function Auth() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          {envMissing && (
+            <div className="mb-4 p-3 rounded-lg border border-amber-300 bg-amber-50 text-amber-800 text-sm">
+              Variáveis do Supabase ausentes. Crie um arquivo <code>.env</code> com
+              <code className="mx-1">VITE_SUPABASE_URL</code> e
+              <code className="mx-1">VITE_SUPABASE_ANON_KEY</code>. Algumas ações podem não funcionar.
+            </div>
+          )}
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => setMode('signin')}
